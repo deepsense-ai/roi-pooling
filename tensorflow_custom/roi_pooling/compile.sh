@@ -1,0 +1,1 @@
+TF_INC=$(python -c 'import tensorflow as tf; print(tf.sysconfig.get_include())') ; nvcc -std=c++11 -c -o roi_pooling.cu.o roi_pooling.cu.cc -I $TF_INC -D GOOGLE_CUDA=1 -x cu -Xcompiler -fPIC ;  g++ -std=c++11 -shared -o roi_pooling.so roi_pooling.cc  roi_pooling.cu.o -I $TF_INC -fPIC -lcudart -L/usr/local/cuda-7.5/lib64
