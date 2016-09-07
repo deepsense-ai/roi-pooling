@@ -1,5 +1,5 @@
 # Copyright (c) 2016, deepsense.io
-FROM nvidia/cuda:7.5-cudnn4-devel
+FROM nvidia/cuda:7.0-cudnn2-devel
 MAINTAINER Rafal Hryciuk <rafal.hryciuk@deepsense.io>
 # Install Oracle Java 8
 RUN apt-get -y update && apt-get -y install software-properties-common
@@ -64,19 +64,9 @@ RUN apt-get -y install libhdf5-dev
 RUN apt-get -y install libleveldb-dev
 RUN apt-get -y install liblmdb0
 RUN apt-get -y install liblmdb-dev
-# RUN apt-get -y install libboost-thread # Doesn't work
-# RUN apt-get -y install libboost-thread-dev # Broken packages
-# RUN apt-get -y install libboost-system-dev # Broken packages
-RUN apt-get -y install libboost-thread1.55
-RUN apt-get -y install libboost-system1.55
-RUN apt-get -y install libboost-python1.55
-RUN apt-get -y install libboost-filesystem1.55
 RUN apt-get -y install libsnappy1
 RUN apt-get -y install libsnappy-dev
-# RUN apt-get -y install libboost-system1.55 # Conflict
-# RUN apt-get -y install liboost-system1.54.0 # Repeat?
-RUN apt-get -y install libboost-system1.54.0
-RUN apt-get -y install libboost-python1.54.0
+RUN apt-get -y install libboost-all-dev
 RUN apt-get -y install vim
 RUN pip install EasyDict
 # RUN pip install python-opencv # No such thing
@@ -93,40 +83,54 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgflags-dev \
         libhdf5-serial-dev \
         liblmdb-dev \
-        protobuf-compiler && \
-rm -rf /var/lib/apt/lists/*
-ENV CAFFE_ROOT=/opt/caffe
-WORKDIR $CAFFE_ROOT
-# FIXME: clone a specific git tag and use ARG instead of ENV once DockerHub supports this.
-ENV CLONE_TAG=master
-RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
-    for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
-    mkdir build && cd build && \
-    cmake ${CMAKE_ARGS} .. && \
-    make -j"$(nproc)"
-ENV PYCAFFE_ROOT $CAFFE_ROOT/python
-ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
-ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
-RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
-# WORKDIR /workspace # Caffe used it
-RUN cat Makefile.config.example | sed "s/^# WITH_PYTHON_LAYER := 1/WITH_PYTHON_LAYER := 1/" | sed "s/^# USE_CUDNN := 1/USE_CUDNN := 1/" > Makefile.config
-RUN echo "ln -s /dev/null /dev/raw1394" >> /root/.bashrc
-RUN make all -j12
-RUN make test -j12
-# you can use this command manually to test caffe:
-# /bin/bash -c 'source /root/.bashrc; make runtest'
-# Faster-RCNN
-RUN git clone --recursive https://github.com/rbgirshick/py-faster-rcnn.git /root/py-faster-rcnn/
-WORKDIR /root/py-faster-rcnn
-RUN sed 's/sm_35/sm_30/' lib/setup.py > lib/setup.py.tmp
-RUN mv lib/setup.py.tmp lib/setup.py
-RUN sed 's/__C.USE_GPU_NMS = True/__C.USE_GPU_NMS = False/' lib/fast_rcnn/config.py > lib/fast_rcnn/config.py.tmp
-RUN mv lib/fast_rcnn/config.py.tmp lib/fast_rcnn/config.py
-RUN cat caffe-fast-rcnn/Makefile.config.example | sed "s/^# WITH_PYTHON_LAYER := 1/WITH_PYTHON_LAYER := 1/" | sed "s/^# USE_CUDNN := 1/USE_CUDNN := 1/" > caffe-fast-rcnn/Makefile.config
-RUN make -C /root/py-faster-rcnn/lib/
-RUN make -j8 -C /root/py-faster-rcnn/caffe-fast-rcnn/
-RUN make pycaffe -C /root/py-faster-rcnn/caffe-fast-rcnn/
-# you can use these commands manually to test faster-rcnn:
-# ./data/scripts/fetch_faster_rcnn_models.sh
-# ./tools/demo.py # with commented lines calling vis_detections (L98) and plt.show() (L151)
+        protobuf-compiler \
+	mc bc htop
+# && \
+#rm -rf /var/lib/apt/lists/*
+# RUN hostname subcnn
+RUN mkdir /code
+WORKDIR /code
+RUN git clone --recursive https://github.com/yuxng/SubCNN.git && \
+    export ROOT=/code/SubCNN && \
+    cd $ROOT/fast-rcnn/lib && \
+    cat setup.py | sed 's/sm_35/sm_30/' > setup.py && \
+    make && \
+    cd $ROOT/caffe-fast-rcnn && \
+    cp Makefile.config.example Makefile.config && \
+    echo "CUSTOM_CXX := g++ -std=c++11" >> Makefile.config && \ 
+    make -j40 && make pycaffe
+VOLUME /kitti
+RUN ln -s $ROOT/fast-rcnn/data/imagenet_models /kitti/imagenet_models
+RUN ln -s $ROOT/fast-rcnn/data/KITTI/data_object_image_2 /kitti/data_object_image_2
+#ENV CLONE_TAG=master
+#RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
+#    for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
+#    mkdir build && cd build && \
+#    cmake ${CMAKE_ARGS} .. && \
+#    make -j"$(nproc)"
+#ENV PYCAFFE_ROOT $CAFFE_ROOT/python
+#ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
+#ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
+#RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
+## WORKDIR /workspace # Caffe used it
+#RUN cat Makefile.config.example | sed "s/^# WITH_PYTHON_LAYER := 1/WITH_PYTHON_LAYER := 1/" | sed "s/^# USE_CUDNN := 1/USE_CUDNN := 1/" > Makefile.config
+#RUN echo "ln -s /dev/null /dev/raw1394" >> /root/.bashrc
+#RUN make all -j12
+#RUN make test -j12
+## you can use this command manually to test caffe:
+## /bin/bash -c 'source /root/.bashrc; make runtest'
+## Faster-RCNN
+#RUN git clone --recursive https://github.com/rbgirshick/py-faster-rcnn.git /root/py-faster-rcnn/
+#WORKDIR /root/py-faster-rcnn
+#RUN sed 's/sm_35/sm_30/' lib/setup.py > lib/setup.py.tmp
+#RUN mv lib/setup.py.tmp lib/setup.py
+#RUN sed 's/__C.USE_GPU_NMS = True/__C.USE_GPU_NMS = False/' lib/fast_rcnn/config.py > lib/fast_rcnn/config.py.tmp
+#RUN mv lib/fast_rcnn/config.py.tmp lib/fast_rcnn/config.py
+#RUN cat caffe-fast-rcnn/Makefile.config.example | sed "s/^# WITH_PYTHON_LAYER := 1/WITH_PYTHON_LAYER := 1/" | sed "s/^# USE_CUDNN := 1/USE_CUDNN := 1/" > caffe-fast-rcnn/Makefile.config
+#RUN make -C /root/py-faster-rcnn/lib/
+#RUN make -j8 -C /root/py-faster-rcnn/caffe-fast-rcnn/
+#RUN make pycaffe -C /root/py-faster-rcnn/caffe-fast-rcnn/
+## you can use these commands manually to test faster-rcnn:
+## ./data/scripts/fetch_faster_rcnn_models.sh
+## ./tools/demo.py # with commented lines calling vis_detections (L98) and plt.show() (L151)
 
