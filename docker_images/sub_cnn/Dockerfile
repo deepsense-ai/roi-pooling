@@ -96,7 +96,7 @@ RUN git clone --recursive https://github.com/yuxng/SubCNN.git && \
     cat setup.py | sed 's/sm_35/sm_30/' > setup.py && \
     make && \
     cd $ROOT/caffe-fast-rcnn && \
-    cp Makefile.config.example Makefile.config && \
+    cat Makefile.config.example | sed "s/^# WITH_PYTHON_LAYER := 1/WITH_PYTHON_LAYER := 1/" | sed "s/^# USE_CUDNN := 1/USE_CUDNN := 1/" > Makefile.config && \
     echo "CUSTOM_CXX := g++ -std=c++11" >> Makefile.config && \ 
     make -j40 && make pycaffe
 VOLUME /kitti
