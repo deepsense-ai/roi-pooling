@@ -2,7 +2,7 @@
 
 Not ideal, but does the job - it seems that three symbolic links still do not work. Just in the meantime add them manually. 
 
-0. check that image `localhost/caffe` exists - it should on `ml1`.
+0. check that image `localhost/subcnn_gama` exists - it should exist on `ml3`.
 If it doesn't exist you need to build it.
 
 1. run the docker
@@ -15,7 +15,6 @@ If it doesn't exist you need to build it.
 docker ps (this is just to  check the instance name)
 docker attach [instance_name]
 ```
-
 4. ...or with  
 ```
 docker exec -i -t [instance_name] /bin/bash
