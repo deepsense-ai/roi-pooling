@@ -11,11 +11,11 @@ If it doesn't exist you need to build it.
 2. leave the console with ctrl-p + ctrl-q
 
 3. return to the console with 
-
 ```
 docker ps (this is just to  check the instance name)
 docker attach [instance_name]
 ```
+
 4. ...or with 
 
 ```
