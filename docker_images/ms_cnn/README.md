@@ -1,4 +1,4 @@
-## Running a demo docker with Caffe and Faster R-CNN installed
+## Running a training of MSCNN on docker with Caffe installed
 
 0. Log in as root to ml1, ml2 or ml3
 
