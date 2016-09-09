@@ -1,14 +1,24 @@
 ## Running a demo docker with Caffe and Faster R-CNN installed
 
+Not ideal, but does the job - it seems that three symbolic links still do not work. Just in the meantime add them manually. 
+
 0. check that image `localhost/caffe` exists - it should on `ml1`.
 If it doesn't exist you need to build it.
 
 1. run the docker
-`sudo nvidia-docker run -v models_container:/root/py-faster-rcnn/data/faster_rcnn_models --rm -i -t --net=host localhost/caffe /bin/bash`
+`sudo nvidia-docker run -v /mnt/storage/datasets/kitty:/kitti -i -t --net=host localhost/subcnn_gamma /bin/bash`
 
-2. inside the docker execute 
+2. leave the console with ctrl-p + ctrl-q
+
+3. return to the console with 
 
 ```
-./data/scripts/fetch_faster_rcnn_models.sh  # no need to re-download, models will be stored in a volume
-./tools/demo.py # with commented lines calling vis_detections (L98) and plt.show() (L151)
+docker ps (this is just to  check the instance name)
+docker attach [instance_name]
+```
+
+4. ...or with 
+
+```
+docker exec -i -t [instance_name] /bin/bash
 ```

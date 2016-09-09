@@ -93,15 +93,17 @@ WORKDIR /code
 RUN git clone --recursive https://github.com/yuxng/SubCNN.git && \
     export ROOT=/code/SubCNN && \
     cd $ROOT/fast-rcnn/lib && \
-    cat setup.py | sed 's/sm_35/sm_30/' > setup.py && \
+    cat setup.py | sed 's/sm_35/sm_30/' > setup.py.tmp && \
+    mv setup.py.tmp setup.py && \
     make && \
     cd $ROOT/caffe-fast-rcnn && \
     cat Makefile.config.example | sed "s/^# WITH_PYTHON_LAYER := 1/WITH_PYTHON_LAYER := 1/" | sed "s/^# USE_CUDNN := 1/USE_CUDNN := 1/" > Makefile.config && \
     echo "CUSTOM_CXX := g++ -std=c++11" >> Makefile.config && \ 
     make -j40 && make pycaffe
 VOLUME /kitti
-RUN ln -s $ROOT/fast-rcnn/data/imagenet_models /kitti/imagenet_models
-RUN ln -s $ROOT/fast-rcnn/data/KITTI/data_object_image_2 /kitti/data_object_image_2
+RUN ln -s /kitti/imagenet_models $ROOT/fast-rcnn/data/imagenet_models 
+RUN ln -s /kitti/data_object_image_2 $ROOT/fast-rcnn/data/KITTI/data_object_image_2
+RUN ln -s /kitti/voxel_examplars $ROOT/fast-rcnn/data/KITTI/voxel_examplars
 #ENV CLONE_TAG=master
 #RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
 #    for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
