@@ -16,7 +16,6 @@ If it doesn't exist you need to build it.
 docker ps (this is just to  check the instance name)
 docker attach [instance_name]
 ```
-
 4. ...or with 
 
 ```
