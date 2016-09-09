@@ -13,7 +13,8 @@
 5. run the docker
 `nvidia-docker run -v /mnt/storage/datasets/kitty/data_object_image_2/training:/kitti -i -t --net=host [your_tag] /bin/bash`
 
-6. inside the docker: 
+6. inside the docker:
+ 
 * run `cd mscnn/examples/kitti_car/mscnn-7s-576-2x`
 
 * in the files trainval_1st.prototxt and trainval_2nd.prototxt replace the lines "../../../data/kitti/window_files/mscnn_window_file_kitti_vehicle_train.txt"
