@@ -11,7 +11,7 @@
 4. tag your docker by running the following command: `sudo docker tag [your_id] [your_tag] `
 
 5. run the docker
-`nvidia-docker run -v /mnt/storage/datasets/kitty/data_object_image_2/training:/kitti -i -t --net=host [your_tag] /bin/bash`
+`sudo nvidia-docker run -v /mnt/storage/datasets/kitty/data_object_image_2/training:/kitti -i -t --net=host [your_tag] /bin/bash`
 
 6. inside the docker:
 
