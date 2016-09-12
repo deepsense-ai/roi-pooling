@@ -1,4 +1,4 @@
-Running an example of Faster-RCNN
+##Running an example of Faster-RCNN
 
 1. Build a docker instance using the instructions in the superfolder.
 2. Edit dockerStart.sh replacing faster-rcnn-test with the name of your docker.
