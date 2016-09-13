@@ -11,14 +11,18 @@
 
 ##Further information:
 
-1. trainShortKitti.sh Invokes train_faster_rcnn_alt_opt.py with the following parameters:
+1. `trainShortKitti.sh` invokes `train_faster_rcnn_alt_opt.py` with the following parameters:
   --gpu 0 \ (obvious)
   
   --net_name "VGG_CNN_M_1024_FOUR_CLASSES" \ (the folder with parameters and architectures of networks to be train.
                             It is a modification of VGG_CNN_M_1024, which support 4 classes (instead standard 20).
+  
   --weights data/imagenet_models/VGG_CNN_M_1024.v2.caffemodel \ (initialization from the imagenet)
+  
   --imdb RadezVousWithKittiShort \ (the dataset to be described)
+  
   --cfg experiments/cfgs/faster_rcnn_alt_opt.yml \ (some parameters)
+  
   --iterations "100 100 100 100" (number of iterations in the four stages training described in the paper)
 2. kittiReader.py is the dataloder, cloned from the pascal voc dataloader, with changed the list of classes to "car, track, van, tram" and jpg to png in the format specification. 
 3. Datasets need to be registered in factory.py 
