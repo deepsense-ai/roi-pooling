@@ -12,7 +12,9 @@
 ##Further information:
 
 1. trainShortKitti.sh Invokes train_faster_rcnn_alt_opt.py with the following parameters:
+
   --gpu 0 \ (obvious)
+  
   --net_name "VGG_CNN_M_1024_FOUR_CLASSES" \ (the folder with parameters and architectures of networks to be train.
                             It is a modification of VGG_CNN_M_1024, which support 4 classes (instead standard 20).
   --weights data/imagenet_models/VGG_CNN_M_1024.v2.caffemodel \ (initialization from the imagenet)
