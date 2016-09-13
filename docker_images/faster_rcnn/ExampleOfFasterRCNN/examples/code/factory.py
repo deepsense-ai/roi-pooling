@@ -16,8 +16,9 @@ import numpy as np
 import os
 from fast_rcnn.config import cfg
 
-#Here is the line defining the dataset for the kitti experiment
-__sets['RadezVousWithKittiShort'] = (lambda: kittiReader('trainval', devkit_path = os.path.join(cfg.DATA_DIR, 'RadezVousWithKittiShort')))
+#Here are the lines defining the dataset for the kitti experiment
+__sets['RandezVousWithKittiShort'] = (lambda: kittiReader('trainval', devkit_path = os.path.join(cfg.DATA_DIR, 'RandezVousWithKittiShort')))
+__sets['RandezVousWithKitti'] = (lambda: kittiReader('trainval', devkit_path = os.path.join(cfg.DATA_DIR, 'RandezVousWithKitti')))
 
 
 # Set up voc_<year>_<split> using selective search "fast" mode
