@@ -7,7 +7,7 @@
 3. Run ./dockerStart.sh
 4. In docker cd ~/examples
 5. Run trainShortKitti.sh and later demoShortKitti.sh to get a short test.
-6. Run *trainLongKitti.sh* and demoLongKitti.sh for a *full training* on the RandezVousWithKitti dataset. Note that trainLongKitti.sh may seem unresponsive at the begining as it process the dataset before the acctual training. How about having a cup of :caffee:? ;)
+6. Run *trainLongKitti.sh* and demoLongKitti.sh for a *full training* on the RandezVousWithKitti dataset. Note that trainLongKitti.sh may seem unresponsive at the begining as it process the dataset before the acctual training. How about having a cup of :coffee:? ;)
 
 ##Further information:
 
