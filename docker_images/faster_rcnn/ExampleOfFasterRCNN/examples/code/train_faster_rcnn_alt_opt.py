@@ -51,7 +51,8 @@ def parse_args():
                         nargs=argparse.REMAINDER)
     parser.add_argument('--iterations', dest='iterations',
                         help='Number of iterations', default=None, type=str)
-
+    parser.add_argument('--70Anchors', dest='Anchors',
+                        help='do to create more anchors', default='False', type=str)
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
@@ -228,6 +229,14 @@ if __name__ == '__main__':
 
     print "Iterations:" + str(args.iterations)
     max_iters = [int(x) for x in args.iterations.split(" ")]
+
+    if args.Anchors == "True":
+	cfg.MANY_ANCHORS = True
+	print "We will use 70 anchors"
+    else:
+	cfg.MANY_ANCHORS = False
+	print "We will use standard 9 anchors"
+
 
     print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
     print 'Stage 1 RPN, init from ImageNet model'
