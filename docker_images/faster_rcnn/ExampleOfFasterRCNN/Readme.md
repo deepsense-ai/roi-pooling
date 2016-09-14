@@ -7,7 +7,8 @@
 3. Run `./dockerStart.sh`
 4. In docker `cd ~/examples`
 5. Run `trainShortKitti.sh` and later `demoShortKitti.sh` to get a short test.
-6. Run *`trainLongKitti.sh`* and `demoLongKitti.sh` for a *full training* on the RandezVousWithKitti dataset. Note that trainLongKitti.sh may seem unresponsive at the begining as it process the dataset before the acctual training. How about having a cup of :coffee:? ;)
+6. Run *`trainLongKitti.sh`* and `demoLongKitti.sh` for a *full training* on the RandezVousWithKitti dataset. Note that trainLongKitti.sh may seem unresponsive at the begining as it process the dataset before the acctual training. How about having a cup of :coffee:? ;). This should give you results around 0.6 of APS ( `sklearn.metrics.average_precision_score`)
+7. Run *`trainLongKitti70Anchors.sh`* for a full training with more anchors. More precisely there are 10 scales and 7 ratios giving 70 combinations. Be prepared to wait very long.
 
 ##Further information:
 
