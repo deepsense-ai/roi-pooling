@@ -169,59 +169,59 @@ class RoiPoolingGradOp : public OpKernel {
 REGISTER_KERNEL_BUILDER(Name("RoiPoolingGrad").Device(DEVICE_GPU), RoiPoolingGradOp);
 
 ////////////// Dummy Op
-REGISTER_OP("RoiPoolingDummy")
-.Input("input: float32")
-.Input("rois: int32")
-.Attr("pool_height: int32")
-.Output("output: float32")
-.Doc(R"doc(
-foo!
-)doc");
+//REGISTER_OP("RoiPoolingDummy")
+//.Input("input: float32")
+//.Input("rois: int32")
+//.Attr("pool_height: int32")
+//.Output("output: float32")
+//.Doc(R"doc(
+//foo!
+//)doc");
+//
+//void RoiPoolingDummyKernelLauncher(const float* in, const int* rois, float* out);
 
-void RoiPoolingDummyKernelLauncher(const float* in, const int* rois, float* out);
-
-class RoiPoolingDummyOp : public OpKernel {
-    private:
-        int pool_height_;
-    public:
-        explicit RoiPoolingDummyOp(OpKernelConstruction* context) : OpKernel(context) {
-                     OP_REQUIRES_OK(context,
-                   context->GetAttr("pool_height", &pool_height_));
-        }
-
-        void Compute(OpKernelContext* context) override {
-            // Grab the input tensor
-            const Tensor& input_tensor = context->input(0);
-            const Tensor& rois_tensor = context->input(1);
-
-            auto input = input_tensor.flat<float>();
-            auto rois = rois_tensor.flat<int32>();
-
-            cout << " pool_height " << pool_height_ << endl;
-            cout << typeid(input).name() << '\n';
-            cout << input.data() << endl;
-            //cout << input.data()[0] << endl;
-            /*for(int i = 0; i < 3; ++i)
-               for(int j = 0; j < 3; ++j)
-                   cout << i << " " <<  j << " " << input.data()[i * 3 + j] << endl;*/
-
-            int a = input_tensor.shape().dims();
-            cout << a << endl;
-
-            int b = rois_tensor.shape().dims();
-            cout << b << endl;
-
-
-            // Create an output tensor
-            Tensor* output_tensor = NULL;
-            OP_REQUIRES_OK(context, context->allocate_output(0, input_tensor.shape(),
-                        &output_tensor));
-            auto output = output_tensor->template flat<float>();
-
-            // Call the cuda kernel launcher
-            RoiPoolingDummyKernelLauncher(input.data(), rois.data(), output.data());
-        }
-};
-
-REGISTER_KERNEL_BUILDER(Name("RoiPoolingDummy").Device(DEVICE_GPU), RoiPoolingDummyOp);
+//class RoiPoolingDummyOp : public OpKernel {
+//    private:
+//        int pool_height_;
+//    public:
+//        explicit RoiPoolingDummyOp(OpKernelConstruction* context) : OpKernel(context) {
+//                     OP_REQUIRES_OK(context,
+//                   context->GetAttr("pool_height", &pool_height_));
+//        }
+//
+//        void Compute(OpKernelContext* context) override {
+//            // Grab the input tensor
+//            const Tensor& input_tensor = context->input(0);
+//            const Tensor& rois_tensor = context->input(1);
+//
+//            auto input = input_tensor.flat<float>();
+//            auto rois = rois_tensor.flat<int32>();
+//
+//            cout << " pool_height " << pool_height_ << endl;
+//            cout << typeid(input).name() << '\n';
+//            cout << input.data() << endl;
+//            //cout << input.data()[0] << endl;
+//            /*for(int i = 0; i < 3; ++i)
+//               for(int j = 0; j < 3; ++j)
+//                   cout << i << " " <<  j << " " << input.data()[i * 3 + j] << endl;*/
+//
+//            int a = input_tensor.shape().dims();
+//            cout << a << endl;
+//
+//            int b = rois_tensor.shape().dims();
+//            cout << b << endl;
+//
+//
+//            // Create an output tensor
+//            Tensor* output_tensor = NULL;
+//            OP_REQUIRES_OK(context, context->allocate_output(0, input_tensor.shape(),
+//                        &output_tensor));
+//            auto output = output_tensor->template flat<float>();
+//
+//            // Call the cuda kernel launcher
+//            RoiPoolingDummyKernelLauncher(input.data(), rois.data(), output.data());
+//        }
+//};
+//
+//REGISTER_KERNEL_BUILDER(Name("RoiPoolingDummy").Device(DEVICE_GPU), RoiPoolingDummyOp);
 
