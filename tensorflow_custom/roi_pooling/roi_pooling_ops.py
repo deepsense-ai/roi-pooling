@@ -23,7 +23,18 @@ def _RoiPoolingGrad(op, *grads):
                                                       orig_argmax_output, orig_output_grad,
                                                       pool_height=op.get_attr('pool_height'),
                                                       pool_width=op.get_attr('pool_width'))
-    return [output_grad, None] # no gradient for rois
+    return [output_grad, None]
 
+@ops.RegisterShape("RoiPooling")
+def _RoiPoolingShape(op):
+    input = op.inputs[0]
+    rois = op.inputs[1]
+    
+    n_rois = rois.get_shape()[0]
+    n_channels = input.get_shape()[1]
+    pool_height = op.get_attr('pool_height')
+    pool_width = op.get_attr('pool_width')
 
-
+    #TODO: check the width/hegiht order
+    return [tf.TensorShape([n_rois, n_channels, pool_width, pool_height]),
+            tf.TensorShape(None)]
