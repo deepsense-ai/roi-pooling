@@ -65,7 +65,7 @@ def load_data():
 
 
 def generate_image_and_rois(width, height, n_rois):
-    x = np.random.uniform(low=0, high=256, size=(1,1,width, height))
+    x = np.random.uniform(low=0, high=2048, size=(1,1,width, height))
     x = np.floor(x)
     
     x1 = np.random.uniform(low=0, high=width, size=(n_rois))
@@ -81,24 +81,18 @@ def generate_image_and_rois(width, height, n_rois):
      # crop the regions
     roi_widths = np.where(x1 + roi_widths > width - 1, width - x1, roi_widths)
     roi_heights = np.where(y1 + roi_heights > height - 1, height - y1, roi_heights)
+    
+    x2 = x1 + roi_widths
+    y2 = y1 + roi_heights
     channels = np.zeros_like(x1)
-    
-    rois = np.vstack([channels, x1, y1, roi_widths, roi_heights]).T
-    
-    x = np.arange(20).reshape(1,1,4,5)
-    
-    rois = [[0, 0, 0, 2, 2],
-            [0, 0, 0, 4, 4],
-            [0, 1, 1, 2, 2]]
-    rois = np.array(rois)
-    
+    rois = np.vstack([channels, x1, y1, x2, y2]).T
     return x, rois
 
 if __name__ == '__main__':
     print 'Generating reference ROI layer outputs with caffe implementation...'
-    x, rois = generate_image_and_rois(width=300, height=300, n_rois=2)
+    x, rois = generate_image_and_rois(width=1000, height=1000, n_rois=1000)
     
-    caffe_y, caffe_grad = ROI_caffe(x, rois, 2, 2)
+    caffe_y, caffe_grad = ROI_caffe(x, rois, 7, 7)
     arrays_to_save = [x, rois, caffe_y, caffe_grad]
     
     for filename, array in zip(filenames, arrays_to_save):
