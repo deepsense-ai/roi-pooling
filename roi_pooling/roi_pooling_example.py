@@ -2,28 +2,17 @@ import tensorflow as tf
 import numpy as np
 from roi_pooling_ops import roi_pooling
 
-trivial_example = True
-
-if trivial_example:
-    input_value = np.arange(20).reshape(1,1,4,5)
-    
-    #the roi parameters:
-    #(? , x_begin, y_begin, width, height))
-    rois_value = [
-                  [0, 1, 1, 4, 3]
-        ]
-else: 
-    input_value = [[[[1, 2, 4, 4],
-                     [3, 4, 1, 2],
-                     [6, 2, 1, 7.0],
-                     [1, 3, 2, 8]]]]
-    rois_value = [
-                  [0, 0, 0, 1, 1],
-                  [0, 1, 1, 2, 2],
-                  [0, 2, 2, 3, 3],
-                  [0, 0, 0, 2, 2],
-                  [0, 0, 0, 3, 3]
-        ]
+input_value = [[[[1, 2, 4, 4],
+                 [3, 4, 1, 2],
+                 [6, 2, 1, 7.0],
+                 [1, 3, 2, 8]]]]
+rois_value = [
+              [0, 0, 0, 1, 1],
+              [0, 1, 1, 2, 2],
+              [0, 2, 2, 3, 3],
+              [0, 0, 0, 2, 2],
+              [0, 0, 0, 3, 3]
+    ]
 
 # the pool_height and width are parameters of the ROI layer
 pool_height, pool_width = (2,2)
