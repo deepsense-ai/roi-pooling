@@ -67,11 +67,14 @@ __global__ void RoiPoolingKernel(const Dtype* input, const int* rois,
     // NOTE(maciek): roi_start, roi_end seems to be inclusive
     int roi_width = max(roi_end_w - roi_start_w + 1, 1);
     int roi_height = max(roi_end_h - roi_start_h + 1, 1);
+
+    // divide the ROIs into smaller regions for max pooling
     Dtype bin_size_h = static_cast<Dtype>(roi_height)
                        / static_cast<Dtype>(pooled_height);
     Dtype bin_size_w = static_cast<Dtype>(roi_width)
                        / static_cast<Dtype>(pooled_width);
 
+    // compute the precise coordinates of each pooling subregion of the ROIs
     int hstart = static_cast<int>(floor(static_cast<Dtype>(ph)
                                         * bin_size_h));
     int wstart = static_cast<int>(floor(static_cast<Dtype>(pw)
