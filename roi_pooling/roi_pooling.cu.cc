@@ -10,7 +10,7 @@
 #define idx4_4(index, d1, d2, d3, d4) (index % d4)
 #define idx4_3(index, d1, d2, d3, d4) ((index / d4) % d3)
 #define idx4_2(index, d1, d2, d3, d4) ((index / d4 / d3) % d2)
-#define idx4_1(index, d1, d2, d3, d4) ((index / d4 / d3 / d2) % d1)
+#define idx4_1(index, d1, d2, d3, d4) ((index / d4 / d3 / d2))
 
 
 // CUDA: various checks for different function calls.
@@ -123,6 +123,12 @@ void RoiPoolingKernelLauncher(const float* input, const int* rois, int n_rois, i
                                  int pooled_height, int pooled_width, Dtype* output, int* argmax_output) {
     int out_size = n_rois * channels * pooled_height * pooled_width;
     std::cout << "out_size " << out_size << std::endl;
+
+//    int input_size = channels * height * width;
+//    for (int i = 0; i < input_size; ++i) {
+//    	std::cout << i << input[i] << std::endl;
+//    }
+
     RoiPoolingKernel<<<CAFFE_GET_BLOCKS(out_size), CAFFE_CUDA_NUM_THREADS>>>(input, rois, n_rois, channels, height, width,
         pooled_height, pooled_width, output, argmax_output);
 }
