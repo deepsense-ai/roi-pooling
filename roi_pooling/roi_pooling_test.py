@@ -138,7 +138,7 @@ class RoiPoolingTest(tf.test.TestCase):
         where the number of output pixels is very large, possibly larger
         than the number of available GPU threads
         """
-        
+
         pooled_w, pooled_h = 7,7
         input_w, input_h = 72, 240
         n_channels = 512
@@ -146,16 +146,16 @@ class RoiPoolingTest(tf.test.TestCase):
         x_input = np.ones(shape=(n_batches, n_channels, input_w, input_h))
         n_rois = 5000
         rois_input = np.ones(shape=(n_rois, 5))
-        
+
         input = tf.placeholder(tf.float32, shape=[n_batches, n_channels, input_w, input_h])
         single_roi_dimension = 5
         rois = tf.placeholder(tf.int32, shape=[n_rois, single_roi_dimension])
-        
+
         y = roi_pooling(input, rois, pool_height=pooled_w, pool_width=pooled_h)
-    
+
         with tf.Session('') as sess:
             y_output =  sess.run(y, feed_dict={input: x_input, rois: rois_input})
-        
+
         self.assertTrue(np.all(y_output == 1))
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@
 #define idx4_4(index, d1, d2, d3, d4) (index % d4)
 #define idx4_3(index, d1, d2, d3, d4) ((index / d4) % d3)
 #define idx4_2(index, d1, d2, d3, d4) ((index / d4 / d3) % d2)
-#define idx4_1(index, d1, d2, d3, d4) ((index / d4 / d3 / d2))
+#define idx4_1(index, d1, d2, d3, d4) ((index / d4 / d3 / d2) %d1)
 
 
 // CUDA: various checks for different function calls.
