@@ -71,25 +71,14 @@ class RoiPoolingOp : public OpKernel {
             OP_REQUIRES_OK(context, context->allocate_output(1, output_shape,
                         &argmax_output_tensor));
 
-
-            // t.grel maybe something gets copied here?
             auto output = output_tensor->template flat<float>();
             auto argmax_output = argmax_output_tensor->template flat<int32>();
-
-            // Call the cuda kernel launcher
-
-            // t.grel HERE CHECK FOR NEGATIVE VALUES BEFORE GPU
-//            cout << "printing the input vector" << std::endl;
-//            for (int i = 0; i != input.size(); ++i) {
-//            	cout << i << input(i) << endl;
-//            }
 
             RoiPoolingKernelLauncher(input.data(), rois.data(),
                 n_rois, channels,
                 height, width,
                 pool_height_, pool_width_,
                 output.data(), argmax_output.data());
-            // t.grel HERE CHECK FOR NEGATIVE VALUES AFTER GPU
         }
 };
 

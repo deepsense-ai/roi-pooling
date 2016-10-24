@@ -5,9 +5,6 @@
 #define EIGEN_USE_GPU
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 
-//#include "tensorflow/core/util/cuda_kernel_helper.h"
-
-
 // CUDA: index helpers
 #define idx4_4(index, d1, d2, d3, d4) (index % d4)
 #define idx4_3(index, d1, d2, d3, d4) ((index / d4) % d3)
@@ -36,6 +33,7 @@ const int CAFFE_CUDA_NUM_THREADS = 512;
 
 // CUDA: number of blocks for threads.
 inline int CAFFE_GET_BLOCKS(const int N) {
+  // TODO rewrite this part to be consistent with tf conventions
   int optimal_number_of_blocks = (N + CAFFE_CUDA_NUM_THREADS - 1) / CAFFE_CUDA_NUM_THREADS;
   int max_number_of_blocks = 65000;
   return std::min(optimal_number_of_blocks, max_number_of_blocks);
@@ -127,8 +125,6 @@ void RoiPoolingKernelLauncher(const float* input, const int* rois, int n_rois, i
                                  int pooled_height, int pooled_width, Dtype* output, int* argmax_output) {
     int out_size = n_rois * channels * pooled_height * pooled_width;
     std::cout << "out_size " << out_size << std::endl;
-
-    //CudaLaunchConfig config = GetCudaLaunchConfig(out.size(), d);
 
     RoiPoolingKernel<<<CAFFE_GET_BLOCKS(out_size), CAFFE_CUDA_NUM_THREADS>>>(input, rois, n_rois, channels, height, width,
         pooled_height, pooled_width, output, argmax_output);
@@ -228,22 +224,5 @@ void RoiPoolingGradKernelLauncher(const Dtype* orig_input, const int* orig_rois,
         mb_size, n_rois, channels, height, width, pooled_height, pooled_width,
         orig_output, orig_argmax_output, orig_output_grad, output);
 }
-
-//////////////////// Dummy
-/*
-__global__ void RoiPoolingDummyKernel(const float* in, const int* rois, float* out) {
-    int idx = threadIdx.x;
-    printf("Hello from thread, %d\n", idx);
-    if (idx < 9) {
-        int x, y;
-        x = idx % 3;
-        y = idx / 3;
-        printf("%d %d %f\n", x, y, in[x * 3 + y]);
-    }
-}
-
-void RoiPoolingDummyKernelLauncher(const float* in, const int* rois, float* out) {
-    RoiPoolingDummyKernel<<<1, 30>>>(in, rois, out);
-}*/
 
 #endif
