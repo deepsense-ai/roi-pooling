@@ -25,13 +25,14 @@ def _RoiPoolingGrad(op, *grads):
                                                       pool_width=op.get_attr('pool_width'))
     return [output_grad, None]
 
+
 @ops.RegisterShape("RoiPooling")
 def _RoiPoolingShape(op):
     input = op.inputs[0]
     rois = op.inputs[1]
-    
+
     n_rois = rois.get_shape()[0]
-    n_channels = input.get_shape()[1]
+    n_channels = input.get_shape()[3]
     pool_height = op.get_attr('pool_height')
     pool_width = op.get_attr('pool_width')
 
