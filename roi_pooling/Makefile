@@ -1,7 +1,7 @@
 TF_INC = $(shell python -c 'import tensorflow as tf; print(tf.sysconfig.get_include())')
 CUDA_LIB = /usr/local/cuda-7.5/lib64
 
-all: build test_data test
+all: clean build test_data test
 
 build: roi_pooling.so
 

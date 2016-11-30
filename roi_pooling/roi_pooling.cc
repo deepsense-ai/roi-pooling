@@ -21,7 +21,7 @@ foo!
 #define Dtype float
 
 void RoiPoolingKernelLauncher(const float* input, const int* rois, int n_rois, int channels, int height, int width,
-                                 int pooled_height, int pooled_width, Dtype* output, int* argmax_output);
+                              int pooled_height, int pooled_width, Dtype* output, int* argmax_output);
 
 // IMPORTANT(maciek): need info about storage of the data in memory, assumed something but need the docs confirming it
 
@@ -54,9 +54,9 @@ class RoiPoolingOp : public OpKernel {
             auto rois_shape = rois_tensor.shape();
 
             int n_rois = rois_shape.dim_size(0);
-            int channels = input_shape.dim_size(1);
-            int height = input_shape.dim_size(2);
-            int width = input_shape.dim_size(3);
+            int height = input_shape.dim_size(1);
+            int width = input_shape.dim_size(2);
+            int channels = input_shape.dim_size(3);
 
             cout << "output_shape: " << n_rois << " " << channels << " " << pool_height_ << " " << pool_width_ << endl;
 
@@ -146,11 +146,9 @@ class RoiPoolingGradOp : public OpKernel {
 
             int mb_size = orig_input_shape.dim_size(0);
             int n_rois = orig_rois_shape.dim_size(0);
-            int channels = orig_input_shape.dim_size(1);
-            int height = orig_input_shape.dim_size(2);
-            int width = orig_input_shape.dim_size(3);
-
-
+            int height = orig_input_shape.dim_size(1);
+            int width = orig_input_shape.dim_size(2);
+            int channels = orig_input_shape.dim_size(3);
 
             OP_REQUIRES_OK(context, context->allocate_output(0, grads_shape,
                         &output_tensor));

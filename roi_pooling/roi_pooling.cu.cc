@@ -11,7 +11,6 @@
 #define idx4_2(index, d1, d2, d3, d4) ((index / d4 / d3) % d2)
 #define idx4_1(index, d1, d2, d3, d4) ((index / d4 / d3 / d2) %d1)
 
-
 // CUDA: various checks for different function calls.
 #define CUDA_CHECK(condition) \
   /* Code block avoids redefinition of cudaError_t error */ \
@@ -48,8 +47,6 @@ __global__ void RoiPoolingKernel(const Dtype* input, const int* rois,
                                  Dtype* output, int* argmax_output) {
     int output_size = n_rois * channels * pooled_height * pooled_width;
 
-    float spatial_scale = 1.0;
-
     CUDA_KERNEL_LOOP(index, output_size) {
     // (n, c, ph, pw) is an element in the pooled output
     int pw = idx4_4(index, n_rois, channels, pooled_height, pooled_width);
@@ -71,20 +68,14 @@ __global__ void RoiPoolingKernel(const Dtype* input, const int* rois,
     int roi_height = max(roi_end_h - roi_start_h + 1, 1);
 
     // divide the ROIs into smaller regions for max pooling
-    Dtype bin_size_h = static_cast<Dtype>(roi_height)
-                       / static_cast<Dtype>(pooled_height);
-    Dtype bin_size_w = static_cast<Dtype>(roi_width)
-                       / static_cast<Dtype>(pooled_width);
+    Dtype bin_size_h = static_cast<Dtype>(roi_height) / static_cast<Dtype>(pooled_height);
+    Dtype bin_size_w = static_cast<Dtype>(roi_width) / static_cast<Dtype>(pooled_width);
 
     // compute the precise coordinates of each pooling subregion of the ROIs
-    int hstart = static_cast<int>(floor(static_cast<Dtype>(ph)
-                                        * bin_size_h));
-    int wstart = static_cast<int>(floor(static_cast<Dtype>(pw)
-                                        * bin_size_w));
-    int hend = static_cast<int>(ceil(static_cast<Dtype>(ph + 1)
-                                     * bin_size_h));
-    int wend = static_cast<int>(ceil(static_cast<Dtype>(pw + 1)
-                                     * bin_size_w));
+    int hstart = static_cast<int>(floor(static_cast<Dtype>(ph) * bin_size_h));
+    int wstart = static_cast<int>(floor(static_cast<Dtype>(pw) * bin_size_w));
+    int hend = static_cast<int>(ceil(static_cast<Dtype>(ph + 1) * bin_size_h));
+    int wend = static_cast<int>(ceil(static_cast<Dtype>(pw + 1) * bin_size_w));
 
     // Add roi offsets and clip to input boundaries
     hstart = min(max(hstart + roi_start_h, 0), height);
@@ -103,10 +94,10 @@ __global__ void RoiPoolingKernel(const Dtype* input, const int* rois,
     // If nothing is pooled, argmax = -1 causes nothing to be backprop'd
 
     int maxidx = -1;
-    auto input_act = input + ((roi_batch_ind * channels + c) * height * width);
+    auto input_act = input + (roi_batch_ind * height * width * channels);
     for (int h = hstart; h < hend; ++h) {
       for (int w = wstart; w < wend; ++w) {
-        int bottom_index = h * width + w;
+        int bottom_index = (h * width + w) * channels + c;
 
         // bottom index is relative to 2d image only
         if (input_act[bottom_index] > maxval) {
@@ -122,7 +113,7 @@ __global__ void RoiPoolingKernel(const Dtype* input, const int* rois,
 
 
 void RoiPoolingKernelLauncher(const float* input, const int* rois, int n_rois, int channels, int height, int width,
-                                 int pooled_height, int pooled_width, Dtype* output, int* argmax_output) {
+                              int pooled_height, int pooled_width, Dtype* output, int* argmax_output) {
     int out_size = n_rois * channels * pooled_height * pooled_width;
     std::cout << "out_size " << out_size << std::endl;
 
@@ -140,14 +131,14 @@ __global__ void RoiPoolingGradKernel(const Dtype* orig_input, const int* orig_ro
                                  const Dtype* orig_output_grad,
                                  Dtype* output) {
 
-    int orig_input_size = mb_size * channels * height * width;
+    int orig_input_size = mb_size * height * width * channels;
 
     CUDA_KERNEL_LOOP(index, orig_input_size) {
-    // (n, c, h, w) coords in bottom data
-    int w = idx4_4(index, mb_size, channels, height, width);
-    int h = idx4_3(index, mb_size, channels, height, width);
-    int c = idx4_2(index, mb_size, channels, height, width);
-    int n = idx4_1(index, mb_size, channels, height, width);
+    // (n, h, w, c) coords in bottom data
+    int c = idx4_4(index, mb_size, height, width, channels);
+    int w = idx4_3(index, mb_size, height, width, channels);
+    int h = idx4_2(index, mb_size, height, width, channels);
+    int n = idx4_1(index, mb_size, height, width, channels);
 
     Dtype gradient = 0;
     // Accumulate gradient over all ROIs that pooled this element
@@ -182,10 +173,8 @@ __global__ void RoiPoolingGradKernel(const Dtype* orig_input, const int* orig_ro
       int roi_width = max(roi_end_w - roi_start_w + 1, 1);
       int roi_height = max(roi_end_h - roi_start_h + 1, 1);
 
-      Dtype bin_size_h = static_cast<Dtype>(roi_height)
-                         / static_cast<Dtype>(pooled_height);
-      Dtype bin_size_w = static_cast<Dtype>(roi_width)
-                         / static_cast<Dtype>(pooled_width);
+      Dtype bin_size_h = static_cast<Dtype>(roi_height) / static_cast<Dtype>(pooled_height);
+      Dtype bin_size_w = static_cast<Dtype>(roi_width) / static_cast<Dtype>(pooled_width);
 
       int phstart = floor(static_cast<Dtype>(h - roi_start_h) / bin_size_h);
       int phend = ceil(static_cast<Dtype>(h - roi_start_h + 1) / bin_size_h);
@@ -199,8 +188,7 @@ __global__ void RoiPoolingGradKernel(const Dtype* orig_input, const int* orig_ro
 
       for (int ph = phstart; ph < phend; ++ph) {
         for (int pw = pwstart; pw < pwend; ++pw) {
-          if (offset_argmax_data[ph * pooled_width + pw] ==
-              (h * width + w)) {
+          if (offset_argmax_data[ph * pooled_width + pw] == (h * width + w)) {
             gradient += offset_top_diff[ph * pooled_width + pw];
           }
         }
@@ -218,7 +206,7 @@ void RoiPoolingGradKernelLauncher(const Dtype* orig_input, const int* orig_rois,
                                  const Dtype* orig_output, const int* orig_argmax_output,
                                  const Dtype* orig_output_grad,
                                  Dtype* output) {
-    int out_size = mb_size * channels * height * width;
+    int out_size = mb_size * height * width * channels;
     std::cout << "out_size " << out_size << std::endl;
     RoiPoolingGradKernel<<<CAFFE_GET_BLOCKS(out_size), CAFFE_CUDA_NUM_THREADS>>>(orig_input, orig_rois,
         mb_size, n_rois, channels, height, width, pooled_height, pooled_width,
