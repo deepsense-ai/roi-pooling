@@ -13,10 +13,8 @@ REGISTER_OP("RoiPooling")
 .Attr("pool_height: int32")
 .Attr("pool_width: int32")
 .Output("output: float32")
-.Output("argmax_output: int32")
-.Doc(R"doc(
-foo!
-)doc");
+.Output("argmax_output: int32");
+
 
 #define Dtype float
 
