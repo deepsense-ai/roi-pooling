@@ -95,7 +95,7 @@ REGISTER_OP("RoiPoolingGrad")
 .Attr("pool_width: int32")
 .Output("output: float32")
 .Doc(R"doc(
-foo!
+ region of interest pooling grad
 )doc");
 
 #define Dtype float
