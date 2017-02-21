@@ -10,8 +10,8 @@ using namespace std;
 REGISTER_OP("RoiPooling")
 .Input("input: float32")
 .Input("rois: int32")
-.Attr("pool_height: int32")
-.Attr("pool_width: int32")
+.Attr("pool_height: int")
+.Attr("pool_width: int")
 .Output("output: float32")
 .Output("argmax_output: int32");
 
@@ -91,8 +91,8 @@ REGISTER_OP("RoiPoolingGrad")
 .Input("orig_output: float32")
 .Input("orig_argmax_output: int32")
 .Input("orig_output_grad: float32")
-.Attr("pool_height: int32")
-.Attr("pool_width: int32")
+.Attr("pool_height: int")
+.Attr("pool_width: int")
 .Output("output: float32")
 .Doc(R"doc(
  region of interest pooling grad

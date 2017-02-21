@@ -42,60 +42,6 @@ class RoiPoolingTest(tf.test.TestCase):
             self.assertLess(numerical_grad_error_1, 1e-4)
             self.assertLess(numerical_grad_error_2, 1e-4)
 
-    def test_with_reference_output(self):
-        def load_reference_data():
-            input_image_file = 'test_input.npy'
-            input_roi_file = 'test_roi.npy'
-            caffe_output_file = 'test_caffe_output.npy'
-            caffe_grad_file = 'test_caffe_grad.npy'
-
-            filenames = [input_image_file, input_roi_file, caffe_output_file, caffe_grad_file]
-            return [np.load(f) for f in filenames]
-
-        def compute_ROI(x_input, rois_input, pooled_w, pooled_h):
-            input = tf.placeholder(tf.float32)
-            rois = tf.placeholder(tf.int32)
-
-            y = roi_pooling(input, rois, pool_height=pooled_w, pool_width=pooled_h)
-            mean = tf.reduce_sum(y)
-            grads = tf.gradients(mean, input)
-            with tf.Session('') as sess:
-                y_output = sess.run(y, feed_dict={input: x_input, rois: rois_input})
-                grads_output = sess.run(grads, feed_dict={input: x_input, rois: rois_input})
-                grads_output = grads_output[0]
-            return y_output, grads_output
-
-        (x, rois, reference_y, reference_grad) = load_reference_data()
-
-        self.assertEqual(x.ndim, 4)
-        self.assertEqual(x.shape[0], 1)
-        self.assertEqual(x.shape[3], 1)
-
-        self.assertEqual(rois.ndim, 2)
-        self.assertEqual(rois.shape[1], 5)
-
-        p_width = 7
-        p_height = 7
-        tf_y, tf_grad = compute_ROI(x, rois, p_width, p_height)
-
-        self.assertEqual(tf_grad.ndim, 4)
-        self.assertEqual(tf_grad.shape[0], 1)
-        self.assertEqual(tf_grad.shape[3], 1)
-
-        self.assertEqual(tf_grad.shape[1], x.shape[1])
-        self.assertEqual(tf_grad.shape[2], x.shape[2])
-
-        self.assertEqual(tf_y.ndim, 4)
-        self.assertEqual(tf_y.shape[1], 1)
-        self.assertEqual(tf_y.shape[2], p_height)
-        self.assertEqual(tf_y.shape[3], p_width)
-
-        self.assertEqual(tf_y.shape[0], rois.shape[0])
-        self.assertEqual(tf_grad.sum(), reference_grad.sum())
-
-        np.testing.assert_almost_equal(actual=tf_y, desired=reference_y, decimal=10)
-        np.testing.assert_almost_equal(actual=tf_grad, desired=reference_grad, decimal=10)
-
     def test_shape_inference_1(self):
         pooled_w, pooled_h = 2, 2
         input_w, input_h = 200, 200
