@@ -1,8 +1,11 @@
 import tensorflow as tf
 from tensorflow.python.framework import ops
+import os
 
-roi_pooling_module = tf.load_op_library('./roi_pooling.so')
-
+module_path = os.path.realpath(__file__)
+module_dir = os.path.dirname(module_path)
+lib_path = os.path.join(module_dir, 'roi_pooling.so')
+roi_pooling_module = tf.load_op_library(lib_path)
 
 def roi_pooling(input, rois, pool_height, pool_width):
     # TODO(maciek): ops scope
