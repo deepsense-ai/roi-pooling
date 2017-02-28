@@ -13,7 +13,3 @@ To compile and install the operation, issue the following commands:
 ```
 python setup.py install
 ```
-
-# Usage
-
-For usage example please see the example directory.
