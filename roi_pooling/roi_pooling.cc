@@ -56,8 +56,6 @@ class RoiPoolingOp : public OpKernel {
             int width = input_shape.dim_size(2);
             int channels = input_shape.dim_size(3);
 
-            cout << "output_shape: " << n_rois << " " << channels << " " << pool_height_ << " " << pool_width_ << endl;
-
             TensorShape output_shape = TensorShape({static_cast<int64>(n_rois),
                                         static_cast<int64>(channels),
                                         static_cast<int64>(pool_height_),
