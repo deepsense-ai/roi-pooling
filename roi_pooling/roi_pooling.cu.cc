@@ -115,7 +115,6 @@ __global__ void RoiPoolingKernel(const Dtype* input, const int* rois,
 void RoiPoolingKernelLauncher(const float* input, const int* rois, int n_rois, int channels, int height, int width,
                               int pooled_height, int pooled_width, Dtype* output, int* argmax_output) {
     int out_size = n_rois * channels * pooled_height * pooled_width;
-    std::cout << "out_size " << out_size << std::endl;
 
     RoiPoolingKernel<<<CAFFE_GET_BLOCKS(out_size), CAFFE_CUDA_NUM_THREADS>>>(input, rois, n_rois, channels, height, width,
         pooled_height, pooled_width, output, argmax_output);
@@ -207,7 +206,6 @@ void RoiPoolingGradKernelLauncher(const Dtype* orig_input, const int* orig_rois,
                                  const Dtype* orig_output_grad,
                                  Dtype* output) {
     int out_size = mb_size * height * width * channels;
-    std::cout << "out_size " << out_size << std::endl;
     RoiPoolingGradKernel<<<CAFFE_GET_BLOCKS(out_size), CAFFE_CUDA_NUM_THREADS>>>(orig_input, orig_rois,
         mb_size, n_rois, channels, height, width, pooled_height, pooled_width,
         orig_output, orig_argmax_output, orig_output_grad, output);
