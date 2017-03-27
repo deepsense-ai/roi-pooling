@@ -10,6 +10,8 @@ For more information about RoI pooling you can check out our [blog](https://deep
 
 You need to have CUDA and TensorFlow  installed on your system to compile and use the operation. The code was tested with CUDA 8.0 and TensorFlow 0.12.0 and 1.0.0.
 
+Only official Tensorflow releases are currently supported. If you're using a custom built TensorFlow compiled with a different GCC version (i.e. 5.X) you may need to modify the makefile to [enable the new ABI version.](https://gcc.gnu.org/onlinedocs/libstdc++/manual/using_dual_abi.html)
+
 # Install
 
 To compile and install the operation, issue the following commands:
