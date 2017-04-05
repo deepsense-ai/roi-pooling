@@ -1,6 +1,6 @@
 # roi-pooling
 
-<div style="text-align:center"><img src="https://deepsense.io/wp-content/uploads/2017/02/roi_pooling-1.gif" width="600"/></div>
+![Region of Interest Pooling animation](roi_pooling_animation.gif)
 
 This repo contains the implementation of Region of Interest Pooling as a custom TensorFlow operation. The CUDA code responsible for the computations was largely taken from the original Caffe implementation by Ross Girshick.
 
