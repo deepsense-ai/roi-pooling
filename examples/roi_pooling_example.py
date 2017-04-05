@@ -3,7 +3,7 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 
-from roi_pooling_ops import roi_pooling
+from roi_pooling.roi_pooling_ops import roi_pooling
 
 input_value = [[
     [[1], [2], [4], [4]],
@@ -44,7 +44,6 @@ print(grads)
 print(input_value.shape)
 
 with tf.Session('') as sess:
-    # NOTE(maciek): looks like we have to use consts here, based on tensorflow/python/ops/nn_test.py
     input_const = tf.constant(input_value, tf.float32)
     rois_const = tf.constant(rois_value, tf.int32)
     y = roi_pooling(input_const, rois_const, pool_height=2, pool_width=2)
