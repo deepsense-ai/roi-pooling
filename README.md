@@ -19,3 +19,15 @@ To compile and install the operation, issue the following commands:
 ```
 python setup.py install
 ```
+
+# Usage
+
+After successful installation you can use the operation like this:
+
+```python
+from roi_pooling.roi_pooling_ops import roi_pooling
+
+# here obtain feature map and regions of interest
+rpooling = roi_pooling(feature_map, rois, 7, 7)
+# continue the model
+```
