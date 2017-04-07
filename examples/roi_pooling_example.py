@@ -5,6 +5,7 @@ import numpy as np
 
 from roi_pooling.roi_pooling_ops import roi_pooling
 
+# input feature map going into the RoI pooling 
 input_value = [[
     [[1], [2], [4], [4]],
     [[3], [4], [1], [2]],
@@ -13,6 +14,8 @@ input_value = [[
 ]]
 input_value = np.asarray(input_value, dtype='float32')
 
+# Regions of interest as lists of:
+# feature map index, upper left, bottom right coordinates
 rois_value = [
     [0, 0, 0, 1, 1],
     [0, 1, 1, 2, 2],
