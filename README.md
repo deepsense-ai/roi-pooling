@@ -41,3 +41,6 @@ from roi_pooling.roi_pooling_ops import roi_pooling
 rpooling = roi_pooling(feature_map, rois, 7, 7)
 # continue the model
 ```
+
+Working example in Jupyter Notebook: [examples/roi_pooling_minimal_example.ipynb](https://github.com/deepsense-io/roi-pooling/blob/master/examples/roi_pooling_minimal_example.ipynb)
+
